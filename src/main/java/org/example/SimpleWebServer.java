@@ -8,6 +8,8 @@ package org.example;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimpleWebServer {
 
@@ -118,17 +120,16 @@ public class SimpleWebServer {
 
     public void storeFile(BufferedReader br, OutputStreamWriter osw, String pathname) throws Exception {
         FileWriter fw = null;
-        Scanner sc = new Scanner(br);
+
         try {
             fw = new FileWriter(pathname);
-            String s = sc.nextLine();
-            while(!s.isEmpty() && s != null) {
-                fw.write(s+"\n");
-                s = sc.nextLine();
+            while (br.ready()) {
+                String line = br.readLine();
+                fw.write(line+"\n");
             }
             fw.close();
-            sc.close();
             osw.write("HTP/1.0 201 Created");
+            System.out.println(pathname+" is saved!");
         } catch(Exception e) {
             osw.write("HTTP/1.0 500 Internal Server Error");
         }
@@ -146,49 +147,5 @@ public class SimpleWebServer {
         /* Create a SimpleWebServer object, and run it */
         SimpleWebServer sws = new SimpleWebServer();
         sws.run();
-    }
-
-
-
-
-
-
-    To clarify, below is a revised description of Problem 2.2:
-
-    Modify SimpleWebServer.java and SimpleWebClient.java to allow the client to upload a file. When the user of the client program provides input PUT <DestinationFile> <fileToUpload>, the client program should read the content of <fileToUpload> on the client side and sends the command PUT <destination_path> and the file content to the server. The server program will save the file content to <DestinationFile> on the server and record all client requests into a log file. The sample methods for text file storage and logging are given below. You may update storeFile to deal with binary files if needed. (30 points)
-
-    The source code of storeFile is also updated below. The previous version assumes that the file content has no empty line.
-
-    public void storeFile(BufferedReader br, OutputStreamWriter osw, String pathname) throws Exception {
-
-        FileWriter fw = null;
-
-        Scanner sc = new Scanner(br);
-
-        try {
-
-            fw = new FileWriter(pathname);
-
-            while (sc.hasNext()) {
-
-                String line = sc.nextLine();
-
-                fw.write(line+"\n");
-
-            }
-
-            fw.close();
-
-            sc.close();
-
-            osw.write("HTP/1.0 201 Created");
-
-            System.out.println(pathname+" is saved!");
-
-        } catch(Exception e) {
-
-            osw.write("HTTP/1.0 500 Internal Server Error");
-
-        }
     }
 }

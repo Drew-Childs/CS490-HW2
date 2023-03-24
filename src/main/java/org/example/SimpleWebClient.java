@@ -2,6 +2,9 @@ package org.example;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.StringTokenizer;
 
 public class SimpleWebClient {
     private static final String hostName = "localhost";
@@ -21,8 +24,21 @@ public class SimpleWebClient {
         ) {
             String userInput;
             if ((userInput = stdIn.readLine()) != null) {
+                String response = null;
+                StringTokenizer st = new StringTokenizer (userInput, " ");
+
+                String command = st.nextToken();
+                String pathname = st.nextToken();
+
+                if (command.equals("PUT")) {
+                    String fileName = st.nextToken();
+
+                    String fileContent = Files.readString(Paths.get(fileName));
+                    userInput = command + " " + pathname + "\n" + fileContent;
+                }
                 out.println(userInput);
-                String response=in.readLine();
+                response=in.readLine();
+
                 if (response!=null) {
                     System.out.println("Response from Server: ");
                     System.out.println(response);
